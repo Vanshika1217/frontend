@@ -7,8 +7,8 @@ const Navbar = ({ admin }) => {
   const [cart, setCart] = useState([]);
   const [user, setUser] = useState(null);
   const [showCart, setShowCart] = useState(false);
+  const [menuOpen, setMenuOpen] = useState(false);
 
-  // Retrieve user and cart data from localStorage or API
   useEffect(() => {
     const loadFromStorage = () => {
       const userString = localStorage.getItem("user");
@@ -38,22 +38,15 @@ const Navbar = ({ admin }) => {
     };
 
     loadFromStorage();
-
-    // Listen to localStorage changes
     window.addEventListener("storage", loadFromStorage);
-
-    return () => {
-      window.removeEventListener("storage", loadFromStorage);
-    };
+    return () => window.removeEventListener("storage", loadFromStorage);
   }, []);
 
   const handleLogout = () => {
-    localStorage.removeItem("token");
-    localStorage.removeItem("user");
-    localStorage.removeItem("cart");
+    localStorage.clear();
     setUser(null);
     setCart([]);
-    navigate("/auth"); // Redirect to the login page after logout
+    navigate("/auth");
   };
 
   const getPortalTitle = () => {
@@ -65,19 +58,12 @@ const Navbar = ({ admin }) => {
 
   const getNavigationLinks = () => {
     if (admin) return null;
-
     if (user?.role === "delivery_partner") {
       return (
         <>
-          <Link to="/delivery/dashboard" className="hover:text-blue-400 transition-colors duration-200">
-            Dashboard
-          </Link>
-          <Link to="/delivery/orders" className="hover:text-blue-400 transition-colors duration-200">
-            Orders
-          </Link>
-          <Link to="/delivery/profile" className="hover:text-blue-400 transition-colors duration-200">
-            Profile
-          </Link>
+          <Link to="/delivery/dashboard">Dashboard</Link>
+          <Link to="/delivery/orders">Orders</Link>
+          <Link to="/delivery/profile">Profile</Link>
         </>
       );
     }
@@ -85,33 +71,19 @@ const Navbar = ({ admin }) => {
     if (user?.role === "customer") {
       return (
         <>
-          <Link to="/" className="hover:text-blue-400 transition-colors duration-200">
-            Home
-          </Link>
-          <Link to="/orders" className="hover:text-blue-400 transition-colors duration-200">
-            Orders
-          </Link>
-          <Link to="/track-order" className="hover:text-blue-400 transition-colors duration-200">
-            Track Order
-          </Link>
-          <Link to="/profile" className="hover:text-blue-400 transition-colors duration-200">
-            Profile
-          </Link>
+          <Link to="/">Home</Link>
+          <Link to="/orders">Orders</Link>
+          <Link to="/track-order">Track Order</Link>
+          <Link to="/profile">Profile</Link>
         </>
       );
     }
 
     return (
       <>
-        <Link to="/" className="hover:text-blue-400 transition-colors duration-200">
-          Home
-        </Link>
-        <Link to="/about" className="hover:text-blue-400 transition-colors duration-200">
-          About
-        </Link>
-        <Link to="/contact" className="hover:text-blue-400 transition-colors duration-200">
-          Contact
-        </Link>
+        <Link to="/">Home</Link>
+        <Link to="/about">About</Link>
+        <Link to="/contact">Contact</Link>
       </>
     );
   };
@@ -124,7 +96,7 @@ const Navbar = ({ admin }) => {
       <div className="relative">
         <button
           onClick={() => setShowCart(!showCart)}
-          className="flex items-center bg-blue-600 text-white px-4 py-2 rounded-xl hover:bg-blue-700 transition"
+          className="flex items-center bg-blue-600 text-white px-3 py-1 sm:px-4 sm:py-2 rounded-xl hover:bg-blue-700 transition text-sm sm:text-base"
         >
           🛒 <span className="ml-2">{totalItems} items</span>
         </button>
@@ -155,47 +127,90 @@ const Navbar = ({ admin }) => {
 
   return (
     <nav className="bg-gray-950 text-white shadow-md w-full">
-      <div className="flex justify-between items-center h-20 px-6 md:px-12">
-        {/* Logo */}
-        <div className="flex-shrink-0">
-          <Link
-            to={admin ? "/admin/dashboard" : "/"}
-            className="text-3xl font-extrabold tracking-tight text-white hover:text-gray-300 transition-colors duration-200"
-          >
-            {getPortalTitle()}
-          </Link>
-        </div>
-
-        {/* Navigation Links */}
-        <div className="flex items-center space-x-6 md:space-x-10 text-base md:text-lg">
-          {getNavigationLinks()}
-
-          {/* Cart and User Info */}
-          {user ? (
-            <div className="flex items-center space-x-4">
-              {user.role === "customer" && <CartSummary />}
-              <span className="text-sm text-gray-300 flex items-center gap-2 bg-gray-800 px-3 py-1 rounded-full">
-                <span className="text-green-400 text-lg">
-                  {user.role === "delivery_partner" ? "🚚" : "👤"}
-                </span>
-                {user.name || user.username}
-              </span>
-              <button
-                onClick={handleLogout}
-                className="bg-red-500 hover:bg-red-600 text-sm px-4 py-2 rounded-xl shadow transition-all duration-200"
-              >
-                Logout
-              </button>
-            </div>
-          ) : (
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="flex justify-between items-center h-20">
+          {/* Logo */}
+          <div className="flex-shrink-0">
             <Link
-              to="/auth"
-              className="bg-blue-600 hover:bg-blue-700 text-sm px-4 py-2 rounded-xl shadow transition-all duration-200"
+              to={admin ? "/admin/dashboard" : "/"}
+              className="text-2xl sm:text-3xl font-extrabold tracking-tight text-white hover:text-gray-300"
             >
-              Login
+              {getPortalTitle()}
             </Link>
-          )}
+          </div>
+
+          {/* Desktop Nav Links */}
+          <div className="hidden md:flex items-center space-x-4 lg:space-x-8 text-sm sm:text-base">
+            {getNavigationLinks()}
+            {user ? (
+              <div className="flex items-center gap-3">
+                {user.role === "customer" && <CartSummary />}
+                <span className="hidden sm:flex items-center gap-2 bg-gray-800 px-3 py-1 rounded-full text-gray-300 text-xs sm:text-sm max-w-[140px] truncate">
+                  <span className="text-green-400 text-lg">
+                    {user.role === "delivery_partner" ? "🚚" : "👤"}
+                  </span>
+                  {user.name || user.username}
+                </span>
+                <button
+                  onClick={handleLogout}
+                  className="bg-red-500 hover:bg-red-600 text-xs sm:text-sm px-3 sm:px-4 py-1 sm:py-2 rounded-xl shadow transition"
+                >
+                  Logout
+                </button>
+              </div>
+            ) : (
+              <Link
+                to="/auth"
+                className="bg-blue-600 hover:bg-blue-700 text-xs sm:text-sm px-4 py-2 rounded-xl shadow transition"
+              >
+                Login
+              </Link>
+            )}
+          </div>
+
+          {/* Mobile Menu Button */}
+          <div className="md:hidden">
+            <button
+              onClick={() => setMenuOpen(!menuOpen)}
+              className="focus:outline-none text-2xl"
+            >
+              ☰
+            </button>
+          </div>
         </div>
+
+        {/* Mobile Menu */}
+        {menuOpen && (
+          <div className="md:hidden mt-2 space-y-3 text-sm sm:text-base">
+            <div className="flex flex-col space-y-2 border-t border-gray-700 pt-4">
+              {getNavigationLinks()}
+              {user ? (
+                <>
+                  {user.role === "customer" && <CartSummary />}
+                  <span className="flex items-center gap-2 bg-gray-800 px-3 py-1 rounded-full text-gray-300">
+                    <span className="text-green-400 text-lg">
+                      {user.role === "delivery_partner" ? "🚚" : "👤"}
+                    </span>
+                    {user.name || user.username}
+                  </span>
+                  <button
+                    onClick={handleLogout}
+                    className="bg-red-500 hover:bg-red-600 text-sm px-4 py-2 rounded-xl shadow"
+                  >
+                    Logout
+                  </button>
+                </>
+              ) : (
+                <Link
+                  to="/auth"
+                  className="bg-blue-600 hover:bg-blue-700 text-sm px-4 py-2 rounded-xl shadow text-center"
+                >
+                  Login
+                </Link>
+              )}
+            </div>
+          </div>
+        )}
       </div>
     </nav>
   );
