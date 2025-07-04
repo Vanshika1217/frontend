@@ -2,17 +2,37 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
+
+    <!-- Favicon -->
     <link rel="icon" type="image/svg+xml" href="/vite.svg" />
-    <link href="/src/index.css" rel="stylesheet">
+
+    <!-- Tailwind / Global CSS -->
+    <link href="/src/index.css" rel="stylesheet" />
+
+    <!-- Leaflet CSS -->
     <link
-    rel="stylesheet"
-    href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css"
-  />
+      rel="stylesheet"
+      href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css"
+      integrity="sha512-xwE/Ngk08Y4P4z2+1Dpj0J1P0FkM3upDzCO0YkTmdsFBAx4g7pDUz8NfVGn9Fl+8wTSTCn8fLwB6GkB+6y0pKA=="
+      crossorigin=""
+    />
+
+    <!-- Responsive Meta Tag -->
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Vite + React</title>
+
+    <!-- SEO & PWA Enhancements (optional) -->
+    <meta name="theme-color" content="#1f2937" />
+    <meta name="description" content="Autonomous Delivery System built with Vite + React." />
+    <meta name="keywords" content="React, Vite, Delivery App, Real-time tracking, Tailwind CSS" />
+    <meta name="author" content="Your Name" />
+
+    <title>Deliver At Door</title>
   </head>
-  <body>
+
+  <body class="overflow-x-hidden bg-white text-gray-900">
     <div id="root"></div>
+
+    <!-- Main JavaScript Bundle -->
     <script type="module" src="/src/main.jsx"></script>
   </body>
 </html>

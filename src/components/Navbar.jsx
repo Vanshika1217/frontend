@@ -58,6 +58,7 @@ const Navbar = ({ admin }) => {
 
   const getNavigationLinks = () => {
     if (admin) return null;
+
     if (user?.role === "delivery_partner") {
       return (
         <>
@@ -126,7 +127,7 @@ const Navbar = ({ admin }) => {
   };
 
   return (
-    <nav className="bg-gray-950 text-white shadow-md w-full">
+    <nav className="bg-gray-950 text-white shadow-md w-full z-50">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-20">
           {/* Logo */}
@@ -139,7 +140,7 @@ const Navbar = ({ admin }) => {
             </Link>
           </div>
 
-          {/* Desktop Nav Links */}
+          {/* Desktop Nav */}
           <div className="hidden md:flex items-center space-x-4 lg:space-x-8 text-sm sm:text-base">
             {getNavigationLinks()}
             {user ? (
@@ -168,20 +169,20 @@ const Navbar = ({ admin }) => {
             )}
           </div>
 
-          {/* Mobile Menu Button */}
+          {/* Hamburger Button (Mobile) */}
           <div className="md:hidden">
             <button
               onClick={() => setMenuOpen(!menuOpen)}
-              className="focus:outline-none text-2xl"
+              className="text-2xl focus:outline-none"
             >
               ☰
             </button>
           </div>
         </div>
 
-        {/* Mobile Menu */}
+        {/* Mobile Nav Links */}
         {menuOpen && (
-          <div className="md:hidden mt-2 space-y-3 text-sm sm:text-base">
+          <div className="md:hidden mt-2 space-y-3 text-sm sm:text-base pb-4">
             <div className="flex flex-col space-y-2 border-t border-gray-700 pt-4">
               {getNavigationLinks()}
               {user ? (
