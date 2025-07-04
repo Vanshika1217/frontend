@@ -3,10 +3,8 @@ import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import axios from 'axios';
 import { UserIcon, ShieldCheckIcon } from '@heroicons/react/24/outline';
-import { TruckIcon } from '@heroicons/react/24/solid'; // Optional: use if needed
+import { TruckIcon } from '@heroicons/react/24/solid';
 
-
-// Backend API routes
 const API_ROUTES = {
   customer: { login: '/api/users/login', register: '/api/users/register' },
   delivery: { login: '/api/partners/login', register: '/api/partners/register' },
@@ -39,7 +37,7 @@ const PortalCard = ({ keyName, title, description, icon: Icon, color, selectedPo
   return (
     <div
       onClick={() => setSelectedPortal(keyName)}
-      className={`cursor-pointer p-6 rounded-xl text-white ${color} ${isSelected ? 'ring-4 ring-offset-2 ring-white' : ''} transition shadow-lg`}
+      className={`cursor-pointer p-6 rounded-xl text-white ${color} ${isSelected ? 'ring-4 ring-offset-2 ring-white' : ''} transition shadow-lg w-full`}
     >
       <Icon className="h-8 w-8 mb-3" />
       <h3 className="text-xl font-semibold">{title}</h3>
@@ -48,22 +46,20 @@ const PortalCard = ({ keyName, title, description, icon: Icon, color, selectedPo
   );
 };
 
-const AuthForm = ({
-  isLogin,
-  setIsLogin,
-  formData,
-  handleChange,
-  handleSubmit,
-  loading,
-  selectedPortal,
-}) => (
-  <div className="bg-white p-10 rounded-2xl shadow-xl max-w-3xl mx-auto w-full">
+const AuthForm = ({ isLogin, setIsLogin, formData, handleChange, handleSubmit, loading, selectedPortal }) => (
+  <div className="bg-white p-6 sm:p-10 rounded-2xl shadow-xl w-full max-w-md sm:max-w-3xl mx-auto">
     <div className="mb-6 text-center">
-      <h2 className="text-3xl font-bold text-gray-900">
+      <h2 className="text-2xl sm:text-3xl font-bold text-gray-900">
         {isLogin ? 'Sign in' : 'Create account'}
       </h2>
       <p className="text-sm text-gray-500">{portalDetails[selectedPortal].title}</p>
     </div>
+
+    {isLogin && selectedPortal === 'customer' && (
+      <p className="text-red-600 text-xs text-center mb-4 font-medium">
+        Note: Delivery orders will only be accepted if a rider is available. Please ensure a delivery partner is logged in first.
+      </p>
+    )}
 
     <form className="space-y-5" onSubmit={handleSubmit}>
       {!isLogin && (
@@ -73,10 +69,9 @@ const AuthForm = ({
             type="text"
             name="username"
             required
-            className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+            className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm"
             value={formData.username}
             onChange={handleChange}
-            placeholder="Your name"
           />
         </div>
       )}
@@ -86,10 +81,9 @@ const AuthForm = ({
           type="email"
           name="email"
           required
-          className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+          className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm"
           value={formData.email}
           onChange={handleChange}
-          placeholder="you@example.com"
         />
       </div>
       <div>
@@ -98,10 +92,9 @@ const AuthForm = ({
           type="password"
           name="password"
           required
-          className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+          className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm"
           value={formData.password}
           onChange={handleChange}
-          placeholder="••••••••"
         />
       </div>
 
@@ -110,7 +103,7 @@ const AuthForm = ({
           <label className="block text-sm font-medium text-gray-700">Vehicle Type</label>
           <select
             name="vehicleType"
-            className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+            className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm"
             value={formData.vehicleType}
             onChange={handleChange}
           >
@@ -124,7 +117,7 @@ const AuthForm = ({
       <button
         type="submit"
         disabled={loading}
-        className="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-medium py-3 px-4 rounded-md transition"
+        className="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-medium py-3 px-4 rounded-md"
       >
         {loading ? 'Please wait...' : isLogin ? 'Sign In' : 'Sign Up'}
       </button>
@@ -177,16 +170,16 @@ const Auth = () => {
 
       const payload = isLogin
         ? { email: formData.email, password: formData.password }
-        : {
-            ...formData,
-            role: portalRole,
-          };
+        : { ...formData, role: portalRole };
 
       const response = await axios.post(`https://backend-delivery-eqjf.onrender.com${apiRoute}`, payload);
       const { token, user } = response.data;
 
       localStorage.setItem('token', token);
       localStorage.setItem('user', JSON.stringify(user));
+
+      // 👇 Manually dispatch storage event to trigger re-render in Navbar
+      window.dispatchEvent(new Event('storage'));
 
       navigate(redirectPaths[selectedPortal]);
     } catch (error) {
@@ -197,13 +190,13 @@ const Auth = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-100 py-10 px-6">
-      <div className="max-w-5xl mx-auto text-center mb-8">
-        <h1 className="text-4xl font-extrabold text-gray-900">Welcome to Deliver At Door</h1>
-        <p className="text-lg text-gray-600">Select your portal to proceed</p>
+    <div className="min-h-screen bg-gray-100 px-4 py-10">
+      <div className="max-w-xl sm:max-w-5xl mx-auto text-center mb-8">
+        <h1 className="text-2xl sm:text-4xl font-extrabold text-gray-900">Welcome to Deliver At Door</h1>
+        <p className="text-sm sm:text-lg text-gray-600">Select your portal to proceed</p>
       </div>
 
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 max-w-5xl mx-auto mb-12">
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 max-w-xl sm:max-w-5xl mx-auto mb-12">
         {Object.entries(portalDetails).map(([key, val]) => (
           <PortalCard
             key={key}
